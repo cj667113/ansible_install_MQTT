@@ -1,0 +1,58 @@
+---
+- name: Developed 4/26/2020
+  hosts: all
+
+- name: Configure MQTT Server
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Update Repo
+    command: sudo apt-get update
+
+  - name: Upgrade Repo
+    command: sudo apt-get upgrade -y
+
+  - name: Install Mosquitto
+    apt:
+       name: mosquitto
+
+  - name: Instal Mosquitto-Clients
+    apt:
+       name: mosquitto-clients
+
+  - name: Enable 
+    command: sudo systemctl enable mosquitto
+
+  - name: Install DDClient
+    apt:
+       name: ddclient
+  - name: Move DDClient Config
+    copy:
+        src: ddclient.conf
+        dest: /etc/ddclient.conf
+
+  - name: Move MQTT Passwords
+    copy:
+        src: passwd
+        dest: /etc/mosquitto/passwd
+
+  - name: Move MQTT Default Config
+    copy:
+        src: default.conf
+        dest: /etc/mosquitto/conf.d/default.conf
+
+  - name: Execute ddclient
+    command: sudo ddclient
+
+  - name: Install pip
+    apt:
+       name: python-pip
+
+  - name: Install pip3
+    apt:
+       name: python3-pip
+
+  - name: Reboot Machine
+    reboot:
+          reboot_timeout: 3600
